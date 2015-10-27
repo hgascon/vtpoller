@@ -5,6 +5,8 @@ import urllib
 import urllib2
 import json
 import time
+import apikey
+from datetime import date, timedelta
 from shutil import copyfile
 from pandas import DataFrame
 import pandas as pd
@@ -18,9 +20,10 @@ query date, submission date, hash, detections
 """
 
 DATAFILE = "malware_metadata.csv"
-APIKEY = ""
 COLUMNS = ["query_time", "scan_time", "hash", "detections"]
 
+
+#TODO add android tag to query
 def query(parameters):
     url = "https://www.virustotal.com/vtapi/v2/file/report"
     data = urllib.urlencode(parameters)
@@ -29,6 +32,7 @@ def query(parameters):
     jsoni = response.read()
     jsonr = json.loads(jsoni)
     return jsonr
+
 
 def add_results(jsonr, df):
     query_time = int(time.time())
@@ -62,14 +66,15 @@ undetected_hashes = ','.join(df.hash[df.detections <= 3].values)
 
 # add results from existing samples
 parameters = {"resource": undetected_hashes,
-              "apikey": APIKEY}
+              "apikey": apikey.APIKEY}
 jsonr = query(parameters)
 df = add_results(jsonr, df)
 
-#TODO build query for samples submitted in the last 24 hours
 # add results from new samples
+scan_date = (date.today() - timedelta(1)).strftime('%Y-%m-%d')
 parameters = {"resource": "",
-              "apikey": APIKEY}
+              "apikey": apikey.APIKEY,
+              "scan_date": scan_date}
 jsonr = query(parameters)
 df = add_results(jsonr, df)
 
