@@ -1,7 +1,6 @@
 __author__ = 'hgascon'
 
 import os
-import sys
 import urllib
 import urllib2
 import json
@@ -55,7 +54,7 @@ def run():
     # retrieve hashes from new samples under criteria
     first_seen_plus = (date.today() - timedelta(1)).strftime('%Y-%m-%d')
     first_seen_minus = date.today().strftime('%Y-%m-%d')
-    query = "fs:{}+ fs:{}- tag:{} size:{}- positives:0".format(
+    query = "fs:{}+ ls:{}- tag:{} size:{}- positives:0".format(
             first_seen_plus, first_seen_minus, FILE_TYPE, FILE_MAX_SIZE)
     parameters = {"apikey": API_KEY,
                   "query": query}
